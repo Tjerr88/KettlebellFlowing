@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kettlebell Flowing 2.2</title>
+<style>
+:root{
+--bg:#0b0f14;
+--card:#121a26;
+--border:rgba(255,255,255,.10);
+--muted:#9fb0c3;
+--text:#e6eef8;
+--btn:#1e293b;
+}
+body{margin:0;font-family:system-ui,-apple-system;background:var(--bg);color:var(--text);padding:16px}
+.wrap{max-width:800px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px}
+button,select{
+background:var(--btn);color:var(--text);
+border:1px solid rgba(255,255,255,.2);
+border-radius:10px;padding:8px 12px;cursor:pointer
+}
+button:hover{background:#334155}
+details{margin-top:10px;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px}
+summary{cursor:pointer;font-weight:600}
+.flowStep{padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.timer{font-family:monospace;font-size:28px;margin-top:8px}
+.small{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h2>Kettlebell Flowing 2.2</h2>
+
+<div class="card">
+<button onclick="generateSession()">Nieuwe sessie</button>
+<select id="vocabMode">
+<option value="core">Core</option>
+<option value="full">Full</option>
+</select>
+</div>
+
+<div class="card">
+
+<details open>
+<summary>Focus Practice (5 min EMOM)</summary>
+<div id="focusLift" class="flowStep"></div>
+<div class="small">EMOM 3–5 reps • technisch strak</div>
+<button onclick="startFocusTimer()">Start 5:00</button>
+<div class="timer" id="focusTimer">05:00</div>
+</details>
+
+<details>
+<summary>Full Flow</summary>
+<div id="flowList"></div>
+</details>
+
+<details>
+<summary>Segment 1 – Skill</summary>
+<div id="seg1"></div>
+</details>
+
+<details>
+<summary>Segment 2 – Integration</summary>
+<div class="small">Flow links → 1 min rust → Flow rechts</div>
+<button onclick="startRestTimer()">Start 1:00 Rust</button>
+<div class="timer" id="restTimer">01:00</div>
+</details>
+
+<details>
+<summary>Segment 3 – Expression</summary>
+<select id="seg3Min">
+<option value="10">10 min</option>
+<option value="15">15 min</option>
+</select>
+<button onclick="startSeg3Timer()">Start</button>
+<div class="timer" id="seg3Timer">10:00</div>
+</details>
+
+</div>
+</div>
+
+<script>
+const LS_KEY="KB_FLOW_2_2";
+
+const FOCUS_POOLS={
+overhead:["Military Press","Push Press","Z Press","Half Kneeling Press"],
+rotation:["Windmill","Half Kneeling Bent Press","Rotational Clean","Halo"],
+ballistic:["Clean","Snatch","Tactical Snatch","One-arm Swing"],
+floor:["Get Up","Russian Twist","Dead Bug"]
+};
+
+let focusHistory={overhead:[],rotation:[],ballistic:[],floor:[]};
+
+function pickFocus(intent){
+let pool="overhead";
+if(intent==="Rotation") pool="rotation";
+if(intent==="Low") pool="floor";
+if(intent==="Play") pool="ballistic";
+
+let available=FOCUS_POOLS[pool].filter(x=>!focusHistory[pool].includes(x));
+if(available.length===0){
+focusHistory[pool]=[];
+available=FOCUS_POOLS[pool];
+}
+const choice=available[Math.floor(Math.random()*available.length)];
+focusHistory[pool].push(choice);
+return choice;
+}
+
+function generateSession(){
+const intents=["Play","Rotation","Travel","Low"];
+const intent=intents[Math.floor(Math.random()*intents.length)];
+const focus=pickFocus(intent);
+
+document.getElementById("focusLift").innerText=focus;
+
+const flow=["Clean","Front Squat","Military Press","Windmill","Reverse Get Up → Floor"];
+const list=document.getElementById("flowList");
+list.innerHTML="";
+flow.forEach((m,i)=>{
+list.innerHTML+=`<div class="flowStep">${i+1}. ${m}</div>`;
+});
+
+const seg1=document.getElementById("seg1");
+seg1.innerHTML="";
+flow.forEach((m,i)=>{
+const reps=m.startsWith("Reverse Get Up")?1:3+Math.floor(Math.random()*3);
+seg1.innerHTML+=`<div class="flowStep">${i+1}. ${m} — ${reps} reps</div>`;
+});
+}
+
+function startTimer(displayId,seconds){
+let time=seconds;
+const display=document.getElementById(displayId);
+display.innerText=format(time);
+const interval=setInterval(()=>{
+time--;
+display.innerText=format(time);
+if(time<=0){
+clearInterval(interval);
+beep();
+}
+},1000);
+}
+
+function startFocusTimer(){startTimer("focusTimer",300);}
+function startRestTimer(){startTimer("restTimer",60);}
+function startSeg3Timer(){
+const min=parseInt(document.getElementById("seg3Min").value);
+startTimer("seg3Timer",min*60);
+}
+
+function format(t){
+const m=Math.floor(t/60);
+const s=t%60;
+return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+}
+
+function beep(){
+try{
+const ctx=new (window.AudioContext||window.webkitAudioContext)();
+const o=ctx.createOscillator();
+const g=ctx.createGain();
+o.connect(g);g.connect(ctx.destination);
+o.start();
+g.gain.setValueAtTime(0.1,ctx.currentTime);
+o.stop(ctx.currentTime+0.2);
+}catch(e){}
+}
+
+generateSession();
+</script>
+
+</body>
+</html>
