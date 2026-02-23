@@ -1,178 +1,574 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Kettlebell Flowing 2.2</title>
-<style>
-:root{
---bg:#0b0f14;
---card:#121a26;
---border:rgba(255,255,255,.10);
---muted:#9fb0c3;
---text:#e6eef8;
---btn:#1e293b;
-}
-body{margin:0;font-family:system-ui,-apple-system;background:var(--bg);color:var(--text);padding:16px}
-.wrap{max-width:800px;margin:0 auto}
-.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px}
-button,select{
-background:var(--btn);color:var(--text);
-border:1px solid rgba(255,255,255,.2);
-border-radius:10px;padding:8px 12px;cursor:pointer
-}
-button:hover{background:#334155}
-details{margin-top:10px;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px}
-summary{cursor:pointer;font-weight:600}
-.flowStep{padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)}
-.timer{font-family:monospace;font-size:28px;margin-top:8px}
-.small{font-size:13px;color:var(--muted)}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TTS Creative Flow Generator v3 UI</title>
+  <style>
+    :root{
+      --bg:#0f172a; --panel:#111827; --panel2:#0b1220;
+      --text:#e2e8f0; --muted:#94a3b8; --line:#334155;
+      --accent:#60a5fa; --good:#34d399; --warn:#fbbf24;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; padding:18px;
+      background:var(--bg); color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
+    }
+    .wrap{max-width:860px; margin:0 auto}
+    h1{font-size:20px; margin:0 0 8px 0}
+    .sub{font-size:13px; color:var(--muted); line-height:1.35}
+    .grid{display:grid; gap:14px; margin-top:14px}
+    @media(min-width:860px){ .grid{grid-template-columns: 1.05fr .95fr} }
+    .card{
+      background:var(--panel); border:1px solid rgba(255,255,255,.06);
+      border-radius:18px; padding:16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:7px 10px; border-radius:999px;
+      background:rgba(96,165,250,.14);
+      border:1px solid rgba(96,165,250,.25);
+      color:var(--text); font-size:12px;
+    }
+    .pill b{color:var(--accent)}
+    .btn{
+      appearance:none; border:1px solid var(--line);
+      background:#1e293b; color:white;
+      padding:10px 12px; border-radius:12px;
+      font-weight:700; cursor:pointer;
+    }
+    .btn:hover{background:#334155}
+    .btn:active{transform:translateY(1px)}
+    .btn.secondary{background:transparent}
+    .btn.secondary:hover{background:rgba(148,163,184,.12)}
+    .btn.good{border-color:rgba(52,211,153,.35); background:rgba(52,211,153,.10)}
+    .btn.warn{border-color:rgba(251,191,36,.35); background:rgba(251,191,36,.10)}
+    .btn.small{padding:8px 10px; font-size:13px; font-weight:700; border-radius:10px}
+    .hr{height:1px; background:rgba(255,255,255,.08); margin:12px 0}
+    .kicker{font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+    .big{font-size:22px; font-weight:900; letter-spacing:.02em}
+    .muted{color:var(--muted)}
+    .list{margin:10px 0 0 0; padding:0; list-style:none}
+    .list li{
+      padding:9px 0; border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex; justify-content:space-between; gap:10px;
+    }
+    .tag{
+      font-size:12px; padding:4px 8px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    details{
+      background:var(--panel); border:1px solid rgba(255,255,255,.06);
+      border-radius:18px; overflow:hidden;
+    }
+    summary{
+      list-style:none; cursor:pointer;
+      padding:14px 16px;
+      display:flex; align-items:center; justify-content:space-between;
+      font-weight:900;
+    }
+    summary::-webkit-details-marker{display:none}
+    .accBody{padding:0 16px 14px 16px}
+    .step{
+      background:var(--panel2);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:14px; padding:12px; margin-top:10px;
+    }
+    .step h3{margin:0 0 6px 0; font-size:14px}
+    .step p{margin:0; color:var(--muted); font-size:13px; line-height:1.35}
+    label.chk{display:flex; gap:10px; align-items:flex-start; font-size:13px; color:var(--muted)}
+    input[type="checkbox"]{transform:translateY(2px)}
+    .toast{font-size:12px; color:var(--muted); margin-top:10px}
+    .mono{font-variant-numeric: tabular-nums; font-feature-settings:"tnum" 1}
+  </style>
 </head>
 <body>
 <div class="wrap">
+  <h1>TTS Creative Flow</h1>
+  <div class="sub">
+    Jij bouwt de transities. Deze tool geeft je <b>creatieve constraints</b>: een focus lift, een skill-blok met timer, en een flow van 4–6 oefeningen (Push/Pull/Squat/Hinge altijd aanwezig).
+  </div>
 
-<h2>Kettlebell Flowing 2.2</h2>
+  <div class="row" style="margin-top:12px;">
+    <button class="btn good" onclick="newSession()">Nieuwe sessie</button>
+    <button class="btn secondary" onclick="rerollFlow()">Flow opnieuw</button>
+    <span class="pill">Max <b>1</b> overlap met gisteren</span>
+    <span class="pill">Focus ≠ gisteren</span>
+  </div>
 
-<div class="card">
-<button onclick="generateSession()">Nieuwe sessie</button>
-<select id="vocabMode">
-<option value="core">Core</option>
-<option value="full">Full</option>
-</select>
-</div>
+  <div class="grid">
+    <!-- LEFT -->
+    <div class="card">
+      <div class="kicker">Focus</div>
+      <div class="big" id="focusName">—</div>
+      <div class="muted" id="focusMeta" style="margin-top:4px;">—</div>
 
-<div class="card">
+      <div class="hr"></div>
 
-<details open>
-<summary>Focus Practice (5 min EMOM)</summary>
-<div id="focusLift" class="flowStep"></div>
-<div class="small">EMOM 3–5 reps • technisch strak</div>
-<button onclick="startFocusTimer()">Start 5:00</button>
-<div class="timer" id="focusTimer">05:00</div>
-</details>
+      <div class="row" style="justify-content:space-between;">
+        <div>
+          <div class="kicker">Skill</div>
+          <div class="big" id="skillName">—</div>
+          <div class="muted" id="skillMeta" style="margin-top:4px;">—</div>
+        </div>
+      </div>
 
-<details>
-<summary>Full Flow</summary>
-<div id="flowList"></div>
-</details>
+      <div class="step" style="margin-top:12px;">
+        <div class="row" style="justify-content:space-between;">
+          <div>
+            <div class="kicker">Skill timer</div>
+            <div class="big mono" id="skillClock">05:00</div>
+            <div class="muted" id="skillGuide" style="margin-top:4px;">—</div>
+          </div>
+          <div class="row">
+            <button class="btn small good" onclick="skillStartPause()" id="skillBtn">Start</button>
+            <button class="btn small secondary" onclick="skillReset()">Reset</button>
+          </div>
+        </div>
+        <div class="toast" id="wakelockStatus">Wakelock: —</div>
+      </div>
 
-<details>
-<summary>Segment 1 – Skill</summary>
-<div id="seg1"></div>
-</details>
+      <div class="row" style="margin-top:12px;">
+        <label class="chk">
+          <input type="checkbox" id="skillSameAsFocus" onchange="newSession(true)"/>
+          <span><b>Skill mag dezelfde categorie zijn als focus</b> (default: uit, voor meer variatie)</span>
+        </label>
+      </div>
 
-<details>
-<summary>Segment 2 – Integration</summary>
-<div class="small">Flow links → 1 min rust → Flow rechts</div>
-<button onclick="startRestTimer()">Start 1:00 Rust</button>
-<div class="timer" id="restTimer">01:00</div>
-</details>
+      <div class="row" style="margin-top:10px;">
+        <label class="chk">
+          <input type="checkbox" id="beepsOn" checked />
+          <span>Beeps aan (start + elke minuut + einde)</span>
+        </label>
+      </div>
 
-<details>
-<summary>Segment 3 – Expression</summary>
-<select id="seg3Min">
-<option value="10">10 min</option>
-<option value="15">15 min</option>
-</select>
-<button onclick="startSeg3Timer()">Start</button>
-<div class="timer" id="seg3Timer">10:00</div>
-</details>
+      <div class="hr"></div>
 
-</div>
+      <div class="kicker">Vandaag — Flow (4–6)</div>
+      <ul class="list" id="flowList"></ul>
+    </div>
+
+    <!-- RIGHT -->
+    <div>
+      <details open>
+        <summary>
+          <span>Flow</span>
+          <span class="tag">3 stappen</span>
+        </summary>
+        <div class="accBody">
+          <div class="step">
+            <h3>Stap 1 — Losse skills (kennen)</h3>
+            <p>Oefeningen 1 voor 1 oefenen. Park tussen sets. Links + rechts. Doel: de flow “woorden” kennen.</p>
+          </div>
+          <div class="step">
+            <h3>Stap 2 — Single side (1–3 rondes)</h3>
+            <p>Doe de hele flow <b>links</b> (park na zijde) → <b>1:00 rust</b> → hele flow <b>rechts</b> → 1:00 rust. Herhaal tot het vloeiend gaat (max 3).</p>
+            <div class="row" style="margin-top:10px;">
+              <button class="btn small warn" onclick="restStartPause()" id="restBtn">Start 1:00 rust</button>
+              <button class="btn small secondary" onclick="restReset()">Reset</button>
+              <span class="tag mono" id="restClock">01:00</span>
+            </div>
+          </div>
+          <div class="step">
+            <h3>Stap 3 — Flowing (10 min)</h3>
+            <p>10 minuten continuous flow. Park alleen als nodig. Focus: kwaliteit, ritme, ademhaling.</p>
+            <div class="row" style="margin-top:10px;">
+              <button class="btn small good" onclick="flowStartPause()" id="flowBtn">Start 10:00</button>
+              <button class="btn small secondary" onclick="flowReset()">Reset</button>
+              <span class="tag mono" id="flowClock">10:00</span>
+            </div>
+          </div>
+          <div class="toast">Tip: hou je “puzzelen” kort. Als een overgang niet lekker voelt: kies één simpele setup (clean / hinge / park) en ga door.</div>
+        </div>
+      </details>
+    </div>
+  </div>
 </div>
 
 <script>
-const LS_KEY="KB_FLOW_2_2";
-
-const FOCUS_POOLS={
-overhead:["Military Press","Push Press","Z Press","Half Kneeling Press"],
-rotation:["Windmill","Half Kneeling Bent Press","Rotational Clean","Halo"],
-ballistic:["Clean","Snatch","Tactical Snatch","One-arm Swing"],
-floor:["Get Up","Russian Twist","Dead Bug"]
+/*** ---------- Data ---------- ***/
+const DB = {
+  Push: [
+    {name:"Military Press", type:"grind"},
+    {name:"Push Press", type:"grind"},
+    {name:"Floor Press", type:"grind"},
+    {name:"Half Kneeling Press", type:"grind"},
+    {name:"Push-up", type:"grind"},
+    {name:"Bent Press", type:"tech"}
+  ],
+  Pull: [
+    {name:"Bent Over Row", type:"grind"},
+    {name:"Renegade Row", type:"grind"},
+    {name:"High Pull", type:"ballistic"},
+    {name:"Snatch (to OH)", type:"ballistic"},
+    {name:"Rotational Clean", type:"ballistic"},
+    {name:"Pullover", type:"grind"}
+  ],
+  Squat: [
+    {name:"Goblet Squat", type:"grind"},
+    {name:"Front Lunge", type:"grind"},
+    {name:"Reverse Lunge", type:"grind"},
+    {name:"Cossack Squat", type:"grind"},
+    {name:"Jump Squat", type:"ballistic"},
+    {name:"Single Side Front Squat", type:"grind"}
+  ],
+  Hinge: [
+    {name:"One-arm Swing", type:"ballistic"},
+    {name:"Two-arm Swing", type:"ballistic"},
+    {name:"B-stance Deadlift", type:"grind"},
+    {name:"Sumo Deadlift", type:"grind"},
+    {name:"Single Leg Deadlift", type:"grind"},
+    {name:"Hip Thrust", type:"grind"},
+    {name:"Hand-to-Hand Swing", type:"ballistic"},
+    {name:"Figure 8", type:"ballistic"},
+    {name:"Side Swing", type:"ballistic"},
+    {name:"Tactical Lunge (Gate Pass)", type:"tech"}
+  ]
 };
+const FOCUS_CATS = ["Push","Pull","Squat","Hinge"];
+const LS_KEY = "tts_flow_v3_ui_yesterday";
 
-let focusHistory={overhead:[],rotation:[],ballistic:[],floor:[]};
-
-function pickFocus(intent){
-let pool="overhead";
-if(intent==="Rotation") pool="rotation";
-if(intent==="Low") pool="floor";
-if(intent==="Play") pool="ballistic";
-
-let available=FOCUS_POOLS[pool].filter(x=>!focusHistory[pool].includes(x));
-if(available.length===0){
-focusHistory[pool]=[];
-available=FOCUS_POOLS[pool];
+/*** ---------- Utils ---------- ***/
+function rInt(n){ return Math.floor(Math.random()*n); }
+function rChoice(arr){ return arr[rInt(arr.length)]; }
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    const j = rInt(i+1);
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
 }
-const choice=available[Math.floor(Math.random()*available.length)];
-focusHistory[pool].push(choice);
-return choice;
+function overlapCount(a,b){
+  const setB = new Set(b.map(x=>x.name||x));
+  return a.filter(x=>setB.has(x.name||x)).length;
+}
+function fmtTime(s){
+  const m = Math.floor(s/60).toString().padStart(2,"0");
+  const ss = Math.floor(s%60).toString().padStart(2,"0");
+  return `${m}:${ss}`;
+}
+function beep(freq=880, dur=0.09){
+  if(!document.getElementById("beepsOn").checked) return;
+  try{
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.frequency.value = freq;
+    o.type = "sine";
+    g.gain.value = 0.08;
+    o.connect(g); g.connect(ctx.destination);
+    o.start();
+    setTimeout(()=>{ o.stop(); ctx.close(); }, dur*1000);
+  }catch(e){}
+}
+function tripleBeep(){
+  beep(880,0.08);
+  setTimeout(()=>beep(880,0.08), 130);
+  setTimeout(()=>beep(880,0.08), 260);
 }
 
-function generateSession(){
-const intents=["Play","Rotation","Travel","Low"];
-const intent=intents[Math.floor(Math.random()*intents.length)];
-const focus=pickFocus(intent);
-
-document.getElementById("focusLift").innerText=focus;
-
-const flow=["Clean","Front Squat","Military Press","Windmill","Reverse Get Up → Floor"];
-const list=document.getElementById("flowList");
-list.innerHTML="";
-flow.forEach((m,i)=>{
-list.innerHTML+=`<div class="flowStep">${i+1}. ${m}</div>`;
+/*** ---------- Wakelock ---------- ***/
+let wakeLock = null;
+async function requestWakeLock(){
+  try{
+    if("wakeLock" in navigator){
+      wakeLock = await navigator.wakeLock.request("screen");
+      setWakeLockUI(true);
+      wakeLock.addEventListener("release", ()=>setWakeLockUI(false));
+    }else{
+      setWakeLockUI(null);
+    }
+  }catch(e){
+    setWakeLockUI(false);
+  }
+}
+async function releaseWakeLock(){
+  try{ if(wakeLock){ await wakeLock.release(); wakeLock=null; } }catch(e){}
+  setWakeLockUI(false);
+}
+function setWakeLockUI(on){
+  const el = document.getElementById("wakelockStatus");
+  if(on===null){ el.textContent = "Wakelock: niet ondersteund"; return; }
+  el.textContent = `Wakelock: ${on ? "aan" : "uit"}`;
+}
+document.addEventListener("visibilitychange", ()=>{
+  if(document.visibilityState==="visible" && (skillRunning||restRunning||flowRunning)){
+    requestWakeLock();
+  }
 });
 
-const seg1=document.getElementById("seg1");
-seg1.innerHTML="";
-flow.forEach((m,i)=>{
-const reps=m.startsWith("Reverse Get Up")?1:3+Math.floor(Math.random()*3);
-seg1.innerHTML+=`<div class="flowStep">${i+1}. ${m} — ${reps} reps</div>`;
-});
+/*** ---------- Session generation ---------- ***/
+let session = null;
+
+function pickFocus(yFocus){
+  const pool = FOCUS_CATS.filter(c=>c!==yFocus);
+  const cat = rChoice(pool.length ? pool : FOCUS_CATS);
+  const ex = rChoice(DB[cat]);
+  return {cat, ex};
 }
 
-function startTimer(displayId,seconds){
-let time=seconds;
-const display=document.getElementById(displayId);
-display.innerText=format(time);
-const interval=setInterval(()=>{
-time--;
-display.innerText=format(time);
-if(time<=0){
-clearInterval(interval);
-beep();
-}
-},1000);
+function pickSkill(ySkillCat, focusCat){
+  const allowSame = document.getElementById("skillSameAsFocus").checked;
+  const disallowCats = new Set();
+  if(!allowSame) disallowCats.add(focusCat);
+  if(ySkillCat) disallowCats.add(ySkillCat);
+
+  const catPool = FOCUS_CATS.filter(c=>!disallowCats.has(c));
+  const cat = rChoice(catPool.length ? catPool : FOCUS_CATS); // fallback
+  const ex = rChoice(DB[cat]);
+  return {cat, ex};
 }
 
-function startFocusTimer(){startTimer("focusTimer",300);}
-function startRestTimer(){startTimer("restTimer",60);}
-function startSeg3Timer(){
-const min=parseInt(document.getElementById("seg3Min").value);
-startTimer("seg3Timer",min*60);
+function generateFlow(yFlow){
+  let attempts = 0;
+  while(attempts < 80){
+    let flow = [];
+    flow.push(rChoice(DB.Push));
+    flow.push(rChoice(DB.Pull));
+    flow.push(rChoice(DB.Squat));
+    flow.push(rChoice(DB.Hinge));
+
+    const extra = rInt(3); // 0-2
+    const cats = Object.keys(DB);
+    for(let i=0;i<extra;i++){
+      const cat = rChoice(cats);
+      flow.push(rChoice(DB[cat]));
+    }
+
+    // allow duplicates across categories? prevent exact duplicate moves
+    const uniq = [];
+    const seen = new Set();
+    for(const m of flow){
+      if(seen.has(m.name)) continue;
+      seen.add(m.name);
+      uniq.push(m);
+    }
+    flow = uniq;
+    // ensure still 4-6
+    while(flow.length < 4){
+      const cat = rChoice(["Push","Pull","Squat","Hinge"]);
+      const m = rChoice(DB[cat]);
+      if(!seen.has(m.name)){ seen.add(m.name); flow.push(m); }
+    }
+    if(flow.length > 6) flow = flow.slice(0,6);
+
+    shuffle(flow);
+
+    if(!yFlow || overlapCount(flow, yFlow) <= 1){
+      return flow;
+    }
+    attempts++;
+  }
+  // fallback: ignore overlap constraint
+  let flow = [rChoice(DB.Push), rChoice(DB.Pull), rChoice(DB.Squat), rChoice(DB.Hinge)];
+  shuffle(flow);
+  return flow;
 }
 
-function format(t){
-const m=Math.floor(t/60);
-const s=t%60;
-return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+function newSession(keepTimers=false){
+  const y = JSON.parse(localStorage.getItem(LS_KEY) || "null");
+  const yFlow = y?.flow || null;
+  const yFocusCat = y?.focusCat || null;
+  const ySkillCat = y?.skillCat || null;
+
+  const focus = pickFocus(yFocusCat);
+  const skill = pickSkill(ySkillCat, focus.cat);
+  const flow = generateFlow(yFlow);
+
+  session = {
+    focusCat: focus.cat,
+    focus: focus.ex,
+    skillCat: skill.cat,
+    skill: skill.ex,
+    flow
+  };
+
+  localStorage.setItem(LS_KEY, JSON.stringify({
+    focusCat: session.focusCat,
+    focusName: session.focus.name,
+    skillCat: session.skillCat,
+    skillName: session.skill.name,
+    flow: session.flow.map(m=>({name:m.name,type:m.type}))
+  }));
+
+  render();
+
+  if(!keepTimers){
+    skillReset();
+    restReset();
+    flowReset();
+  }
 }
 
-function beep(){
-try{
-const ctx=new (window.AudioContext||window.webkitAudioContext)();
-const o=ctx.createOscillator();
-const g=ctx.createGain();
-o.connect(g);g.connect(ctx.destination);
-o.start();
-g.gain.setValueAtTime(0.1,ctx.currentTime);
-o.stop(ctx.currentTime+0.2);
-}catch(e){}
+function rerollFlow(){
+  const y = JSON.parse(localStorage.getItem(LS_KEY) || "null");
+  const yFlow = y?.flow || null;
+  if(!session) newSession(true);
+  session.flow = generateFlow(yFlow);
+  localStorage.setItem(LS_KEY, JSON.stringify({
+    focusCat: session.focusCat,
+    focusName: session.focus.name,
+    skillCat: session.skillCat,
+    skillName: session.skill.name,
+    flow: session.flow.map(m=>({name:m.name,type:m.type}))
+  }));
+  renderFlow();
 }
 
-generateSession();
+function render(){
+  document.getElementById("focusName").textContent = session.focus.name;
+  document.getElementById("focusMeta").textContent = `Categorie: ${session.focusCat} • Type: ${session.focus.type}`;
+
+  document.getElementById("skillName").textContent = session.skill.name;
+  document.getElementById("skillMeta").textContent = `Categorie: ${session.skillCat} • Type: ${session.skill.type}`;
+
+  const guide = (session.skill.type === "ballistic")
+    ? "5:00 timer • 5–10 reps per minuut (EMOM) • links/rechts afwisselen"
+    : "5:00 timer • 3–5 reps per minuut (EMOM) • links/rechts afwisselen";
+  document.getElementById("skillGuide").textContent = guide;
+
+  renderFlow();
+}
+
+function renderFlow(){
+  const ul = document.getElementById("flowList");
+  ul.innerHTML = "";
+  session.flow.forEach((m, idx)=>{
+    const li = document.createElement("li");
+    li.innerHTML = `<span><b>${idx+1}.</b> ${m.name}</span><span class="tag">${m.type}</span>`;
+    ul.appendChild(li);
+  });
+}
+
+/*** ---------- Timers ---------- ***/
+let skillT = 300, skillInt = null, skillRunning = false, skillLastMin = 5;
+let restT  = 60,  restInt  = null, restRunning  = false, restLast = 1;
+let flowT  = 600, flowInt  = null, flowRunning  = false, flowLast = 10;
+
+function skillStartPause(){
+  if(skillRunning){
+    clearInterval(skillInt); skillInt=null; skillRunning=false;
+    document.getElementById("skillBtn").textContent="Start";
+    return;
+  }
+  // Start
+  beep(660,0.10);
+  requestWakeLock();
+  skillRunning=true;
+  document.getElementById("skillBtn").textContent="Pauze";
+  skillInt = setInterval(()=>{
+    skillT = Math.max(0, skillT-1);
+    const mm = Math.ceil(skillT/60);
+    if(mm < skillLastMin){
+      // minute tick
+      beep(880,0.08);
+      skillLastMin = mm;
+    }
+    document.getElementById("skillClock").textContent = fmtTime(skillT);
+    if(skillT<=0){
+      clearInterval(skillInt); skillInt=null; skillRunning=false;
+      document.getElementById("skillBtn").textContent="Start";
+      tripleBeep();
+      // do not release wake lock if other timers running
+      if(!restRunning && !flowRunning) releaseWakeLock();
+    }
+  }, 1000);
+}
+
+function skillReset(){
+  clearInterval(skillInt); skillInt=null; skillRunning=false;
+  skillT = 300; skillLastMin = 5;
+  document.getElementById("skillClock").textContent = "05:00";
+  document.getElementById("skillBtn").textContent="Start";
+  if(!restRunning && !flowRunning) releaseWakeLock();
+}
+
+function restStartPause(){
+  if(restRunning){
+    clearInterval(restInt); restInt=null; restRunning=false;
+    document.getElementById("restBtn").textContent="Start 1:00 rust";
+    return;
+  }
+  beep(520,0.10);
+  requestWakeLock();
+  restRunning=true;
+  document.getElementById("restBtn").textContent="Pauze rust";
+  restInt = setInterval(()=>{
+    restT = Math.max(0, restT-1);
+    document.getElementById("restClock").textContent = fmtTime(restT);
+    if(restT<=0){
+      clearInterval(restInt); restInt=null; restRunning=false;
+      document.getElementById("restBtn").textContent="Start 1:00 rust";
+      tripleBeep();
+      restT = 60;
+      document.getElementById("restClock").textContent = "01:00";
+      if(!skillRunning && !flowRunning) releaseWakeLock();
+    }
+  }, 1000);
+}
+function restReset(){
+  clearInterval(restInt); restInt=null; restRunning=false;
+  restT = 60;
+  document.getElementById("restClock").textContent = "01:00";
+  document.getElementById("restBtn").textContent="Start 1:00 rust";
+  if(!skillRunning && !flowRunning) releaseWakeLock();
+}
+
+function flowStartPause(){
+  if(flowRunning){
+    clearInterval(flowInt); flowInt=null; flowRunning=false;
+    document.getElementById("flowBtn").textContent="Start 10:00";
+    return;
+  }
+  beep(660,0.10);
+  requestWakeLock();
+  flowRunning=true;
+  document.getElementById("flowBtn").textContent="Pauze";
+  flowInt = setInterval(()=>{
+    flowT = Math.max(0, flowT-1);
+    document.getElementById("flowClock").textContent = fmtTime(flowT);
+    if(flowT<=0){
+      clearInterval(flowInt); flowInt=null; flowRunning=false;
+      document.getElementById("flowBtn").textContent="Start 10:00";
+      tripleBeep();
+      if(!skillRunning && !restRunning) releaseWakeLock();
+    }
+  }, 1000);
+}
+function flowReset(){
+  clearInterval(flowInt); flowInt=null; flowRunning=false;
+  flowT = 600;
+  document.getElementById("flowClock").textContent = "10:00";
+  document.getElementById("flowBtn").textContent="Start 10:00";
+  if(!skillRunning && !restRunning) releaseWakeLock();
+}
+
+/*** ---------- Boot ---------- ***/
+(function boot(){
+  const y = JSON.parse(localStorage.getItem(LS_KEY) || "null");
+  if(y && y.flow && y.focusCat && y.skillCat){
+    // restore last session immediately
+    const focusEx = {name:y.focusName || "—", type:"—"};
+    const skillEx = {name:y.skillName || "—", type:"—"};
+    session = {
+      focusCat: y.focusCat,
+      focus: focusEx,
+      skillCat: y.skillCat,
+      skill: skillEx,
+      flow: y.flow.map(m=>({name:m.name, type:m.type || "grind"}))
+    };
+    // If user wants, they can click "Nieuwe sessie" for a fresh one.
+    render();
+  }else{
+    newSession(true);
+  }
+})();
 </script>
-
 </body>
 </html>
