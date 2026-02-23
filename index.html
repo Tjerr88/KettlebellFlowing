@@ -92,26 +92,19 @@
 <div class="wrap">
   <h1>TTS Creative Flow</h1>
   <div class="sub">
-    Jij bouwt de transities. Deze tool geeft je <b>creatieve constraints</b>: een focus lift, een skill-blok met timer, en een flow van 4–6 oefeningen (Push/Pull/Squat/Hinge altijd aanwezig).
+    Jij bouwt de transities. Deze tool geeft je <b>creatieve constraints</b>: een skill-blok met timer, en een flow van 4–6 oefeningen (Push/Pull/Squat/Hinge altijd aanwezig).
   </div>
 
   <div class="row" style="margin-top:12px;">
     <button class="btn good" onclick="newSession()">Nieuwe sessie</button>
     <button class="btn secondary" onclick="rerollFlow()">Flow opnieuw</button>
     <span class="pill">Max <b>1</b> overlap met gisteren</span>
-    <span class="pill">Focus ≠ gisteren</span>
-  </div>
+</div>
 
   <div class="grid">
     <!-- LEFT -->
     <div class="card">
-      <div class="kicker">Focus</div>
-      <div class="big" id="focusName">—</div>
-      <div class="muted" id="focusMeta" style="margin-top:4px;">—</div>
-
-      <div class="hr"></div>
-
-      <div class="row" style="justify-content:space-between;">
+<div class="row" style="justify-content:space-between;">
         <div>
           <div class="kicker">Skill</div>
           <div class="big" id="skillName">—</div>
@@ -133,15 +126,7 @@
         </div>
         <div class="toast" id="wakelockStatus">Wakelock: —</div>
       </div>
-
-      <div class="row" style="margin-top:12px;">
-        <label class="chk">
-          <input type="checkbox" id="skillSameAsFocus" onchange="newSession(true)"/>
-          <span><b>Skill mag dezelfde categorie zijn als focus</b> (default: uit, voor meer variatie)</span>
-        </label>
-      </div>
-
-      <div class="row" style="margin-top:10px;">
+<div class="row" style="margin-top:10px;">
         <label class="chk">
           <input type="checkbox" id="beepsOn" checked />
           <span>Beeps aan (start + elke minuut + einde)</span>
@@ -231,7 +216,7 @@ const DB = {
     {name:"Tactical Lunge (Gate Pass)", type:"tech"}
   ]
 };
-const FOCUS_CATS = ["Push","Pull","Squat","Hinge"];
+const SKILL_CATS = ["Push","Pull","Squat","Hinge"];
 const LS_KEY = "tts_flow_v3_ui_yesterday";
 
 /*** ---------- Utils ---------- ***/
@@ -306,21 +291,13 @@ document.addEventListener("visibilitychange", ()=>{
 /*** ---------- Session generation ---------- ***/
 let session = null;
 
-function pickFocus(yFocus){
-  const pool = FOCUS_CATS.filter(c=>c!==yFocus);
-  const cat = rChoice(pool.length ? pool : FOCUS_CATS);
-  const ex = rChoice(DB[cat]);
-  return {cat, ex};
-}
 
-function pickSkill(ySkillCat, focusCat){
-  const allowSame = document.getElementById("skillSameAsFocus").checked;
+function pickSkill(ySkillCat){
   const disallowCats = new Set();
-  if(!allowSame) disallowCats.add(focusCat);
   if(ySkillCat) disallowCats.add(ySkillCat);
 
-  const catPool = FOCUS_CATS.filter(c=>!disallowCats.has(c));
-  const cat = rChoice(catPool.length ? catPool : FOCUS_CATS); // fallback
+  const catPool = SKILL_CATS.filter(c=>!disallowCats.has(c));
+  const cat = rChoice(catPool.length ? catPool : SKILL_CATS); // fallback
   const ex = rChoice(DB[cat]);
   return {cat, ex};
 }
@@ -374,24 +351,18 @@ function generateFlow(yFlow){
 function newSession(keepTimers=false){
   const y = JSON.parse(localStorage.getItem(LS_KEY) || "null");
   const yFlow = y?.flow || null;
-  const yFocusCat = y?.focusCat || null;
   const ySkillCat = y?.skillCat || null;
 
-  const focus = pickFocus(yFocusCat);
-  const skill = pickSkill(ySkillCat, focus.cat);
+  const skill = pickSkill(ySkillCat);
   const flow = generateFlow(yFlow);
 
   session = {
-    focusCat: focus.cat,
-    focus: focus.ex,
     skillCat: skill.cat,
     skill: skill.ex,
     flow
   };
 
   localStorage.setItem(LS_KEY, JSON.stringify({
-    focusCat: session.focusCat,
-    focusName: session.focus.name,
     skillCat: session.skillCat,
     skillName: session.skill.name,
     flow: session.flow.map(m=>({name:m.name,type:m.type}))
@@ -412,8 +383,6 @@ function rerollFlow(){
   if(!session) newSession(true);
   session.flow = generateFlow(yFlow);
   localStorage.setItem(LS_KEY, JSON.stringify({
-    focusCat: session.focusCat,
-    focusName: session.focus.name,
     skillCat: session.skillCat,
     skillName: session.skill.name,
     flow: session.flow.map(m=>({name:m.name,type:m.type}))
@@ -421,11 +390,7 @@ function rerollFlow(){
   renderFlow();
 }
 
-function render(){
-  document.getElementById("focusName").textContent = session.focus.name;
-  document.getElementById("focusMeta").textContent = `Categorie: ${session.focusCat} • Type: ${session.focus.type}`;
-
-  document.getElementById("skillName").textContent = session.skill.name;
+function render(){  document.getElementById("skillName").textContent = session.skill.name;
   document.getElementById("skillMeta").textContent = `Categorie: ${session.skillCat} • Type: ${session.skill.type}`;
 
   const guide = (session.skill.type === "ballistic")
@@ -552,13 +517,10 @@ function flowReset(){
 /*** ---------- Boot ---------- ***/
 (function boot(){
   const y = JSON.parse(localStorage.getItem(LS_KEY) || "null");
-  if(y && y.flow && y.focusCat && y.skillCat){
+  if(y && y.flow && y.skillCat){
     // restore last session immediately
-    const focusEx = {name:y.focusName || "—", type:"—"};
     const skillEx = {name:y.skillName || "—", type:"—"};
     session = {
-      focusCat: y.focusCat,
-      focus: focusEx,
       skillCat: y.skillCat,
       skill: skillEx,
       flow: y.flow.map(m=>({name:m.name, type:m.type || "grind"}))
