@@ -2,533 +2,678 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TTS Creative Flow Generator v3 UI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kettlebell Flowing v4 — Dual-State Seamless Engine</title>
   <style>
     :root{
-      --bg:#0f172a; --panel:#111827; --panel2:#0b1220;
-      --text:#e2e8f0; --muted:#94a3b8; --line:#334155;
-      --accent:#60a5fa; --good:#34d399; --warn:#fbbf24;
+      --bg:#0b0f14;
+      --card:#121a26;
+      --border:rgba(255,255,255,.10);
+      --muted:#9fb0c3;
+      --text:#e6eef8;
+      --btn:#1e293b;
+      --btn2:#0f172a;
+      --good:#22c55e;
+      --warn:#f59e0b;
+      --bad:#ef4444;
     }
-    *{box-sizing:border-box}
-    body{
-      margin:0; padding:18px;
-      background:var(--bg); color:var(--text);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
-    }
-    .wrap{max-width:860px; margin:0 auto}
-    h1{font-size:20px; margin:0 0 8px 0}
-    .sub{font-size:13px; color:var(--muted); line-height:1.35}
-    .grid{display:grid; gap:20px; margin-top:20px}
-    @media(min-width:860px){ .grid{grid-template-columns: 1.05fr .95fr} }
-    .card{
-      background:var(--panel); border:1px solid rgba(255,255,255,.06);
-      border-radius:18px; padding:20px;
-      
-    }
-    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
-    .pill{display:none;
-      display:inline-flex; align-items:center; gap:8px;
-      padding:7px 10px; border-radius:999px;
-      background:rgba(96,165,250,.14);
-      border:1px solid rgba(96,165,250,.25);
-      color:var(--text); font-size:12px;
-    }
-    .pill b{color:var(--accent)}
-    .btn{
-      appearance:none; border:1px solid var(--line);
-      background:transparent; color:white;
-      padding:10px 12px; border-radius:12px;
-      font-weight:500; cursor:pointer;
-    }
-    .btn:hover{background:#334155}
-    .btn:active{transform:translateY(1px)}
-    .btn.secondary{background:transparent}
-    .btn.secondary:hover{background:rgba(148,163,184,.12)}
-    
-    
-    .btn.small{padding:8px 10px; font-size:13px; font-weight:700; border-radius:10px}
-    .hr{height:1px; background:rgba(255,255,255,.08); margin:12px 0}
-    .kicker{font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
-    .big{font-size:22px; font-weight:600; letter-spacing:.02em}
-    .muted{color:var(--muted)}
-    .list{margin:10px 0 0 0; padding:0; list-style:none}
-    .list li{
-      padding:9px 0; border-bottom:1px solid rgba(255,255,255,.08);
-      display:flex; justify-content:space-between; gap:10px;
-    }
-    .tag{
-      font-size:12px; padding:4px 8px; border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      color:var(--muted);
-      white-space:nowrap;
-    }
-    details{
-      background:var(--panel); border:1px solid rgba(255,255,255,.06);
-      border-radius:18px; overflow:hidden;
-    }
-    summary{
-      list-style:none; cursor:pointer;
-      padding:14px 16px;
-      display:flex; align-items:center; justify-content:space-between;
-      font-weight:900;
-    }
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto;background:var(--bg);color:var(--text);padding:16px}
+    .wrap{max-width:920px;margin:0 auto}
+    h1{font-size:20px;margin:0 0 12px 0}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:12px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    button{appearance:none;border:1px solid rgba(255,255,255,.20);background:var(--btn);color:var(--text);padding:10px 12px;border-radius:12px;cursor:pointer}
+    button:hover{background:#334155}
+    button.secondary{background:var(--btn2)}
+    button.ghost{background:transparent}
+    select{padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.20);background:var(--btn2);color:var(--text)}
+    .muted{color:var(--muted);font-size:13px}
+    .flowStep{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+    details{border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:8px 10px;background:rgba(255,255,255,.02);margin-top:10px}
+    summary{cursor:pointer;list-style:none;font-weight:700}
     summary::-webkit-details-marker{display:none}
-    .accBody{padding:0 16px 14px 16px}
-    .step{
-      background:var(--panel2);
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:14px; padding:12px; margin-top:10px;
-    }
-    .step h3{margin:0 0 6px 0; font-size:14px}
-    .step p{margin:0; color:var(--muted); font-size:13px; line-height:1.35}
-    label.chk{display:flex; gap:10px; align-items:flex-start; font-size:13px; color:var(--muted)}
-    input[type="checkbox"]{transform:translateY(2px)}
-    .toast{font-size:12px; color:var(--muted); margin-top:10px}
-    .mono{font-variant-numeric: tabular-nums; font-feature-settings:"tnum" 1}
+    .sub{margin-top:10px}
+    .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:6px 10px;font-size:13px;color:var(--muted)}
+    .timer{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:34px;margin-top:10px}
+    .spacer{height:6px}
+    .k{font-weight:700;color:var(--text)}
+    .grid2{display:grid;grid-template-columns:1fr;gap:10px}
+    @media(min-width:860px){ .grid2{grid-template-columns:1.25fr .75fr} }
+    .tag{display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:2px 8px;font-size:12px;color:var(--muted)}
+    .tag.good{border-color:rgba(34,197,94,.35);color:#86efac}
+    .tag.warn{border-color:rgba(245,158,11,.35);color:#fcd34d}
+    .tag.bad{border-color:rgba(239,68,68,.35);color:#fca5a5}
+    .mini{font-size:12px;color:var(--muted)}
+    .meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+    .tiny{font-size:12px;color:var(--muted)}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
   </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>TTS Creative Flow</h1>
-  <div class="sub">
-    Jij bouwt de transities. Deze tool geeft je <b>creatieve constraints</b>: een skill-blok met timer, en een flow van 4–6 oefeningen (Push/Pull/Squat/Hinge altijd aanwezig).
+  <h1>Kettlebell Flowing v4 — Dual-State Seamless Engine</h1>
+
+  <div class="card">
+    <div class="row">
+      <button onclick="generateFlow()">Nieuwe flow</button>
+      <select id="vocabMode" title="Core = strak en betrouwbaar. Full = rijker (meer routes).">
+        <option value="core">Vocab: Core</option>
+        <option value="full">Vocab: Full</option>
+      </select>
+      <select id="intentMode" title="Intent stuurt voorkeuren (laag, rotatie, travel, etc.)">
+        <option value="auto">Intent: Auto</option>
+        <option value="play">Intent: Play</option>
+        <option value="travel">Intent: Travel</option>
+        <option value="rotation">Intent: Rotation</option>
+        <option value="low">Intent: Low</option>
+        <option value="mixed">Intent: Mixed</option>
+      </select>
+      <span class="pill">Start: <span class="k" id="baseLabel">—</span></span>
+      <span class="pill">Intent: <span class="k" id="intentLabel">—</span></span>
+    </div>
+
+    <div class="grid2" style="margin-top:12px">
+      <div>
+        <div class="sub" id="flowList"></div>
+      </div>
+      <div>
+        <div class="card" style="margin:0;background:rgba(255,255,255,.02)">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+            <div>
+              <div class="k">Seamless regels</div>
+              <div class="muted" style="margin-top:4px">
+                Elke stap moet aansluiten op <span class="k">body state</span> én <span class="k">bell state</span>.
+                “Transities” zijn echte moves.
+              </div>
+            </div>
+            <span class="tag good" id="cohTag">coherent</span>
+          </div>
+          <div class="mini" style="margin-top:10px" id="statsLine">—</div>
+        </div>
+      </div>
+    </div>
+
+    <details open>
+      <summary>Segment 1 — Woorden leren</summary>
+      <div class="muted spacer">3–5 reps per stap (explosief: 2–4). Dit is techniek / vocab.</div>
+      <div id="seg1"></div>
+    </details>
+
+    <details open>
+      <summary>Segment 2 — Zin oefenen</summary>
+      <div class="muted spacer">Oefen de volledige flow 1–3x. Neem aan het einde rust om na te denken en te finetunen.</div>
+      <div class="row" style="margin-top:8px">
+        <select id="seg2Rounds">
+          <option value="1">1x flow</option>
+          <option value="2" selected>2x flow</option>
+          <option value="3">3x flow</option>
+        </select>
+        <select id="seg2Rest">
+          <option value="30">Rust 0:30</option>
+          <option value="60" selected>Rust 1:00</option>
+          <option value="90">Rust 1:30</option>
+        </select>
+        <button class="secondary" onclick="startSeg2Rest()">Start rust</button>
+        <button class="ghost" onclick="stopSeg2Rest()">Stop</button>
+      </div>
+      <div class="timer" id="seg2Timer">01:00</div>
+      <div id="seg2"></div>
+    </details>
+
+    <details open>
+      <summary>Segment 3 — Vloeiend spreken</summary>
+      <div class="muted spacer">Continuous • 10 min max quality (of 15 min). Geen nadenk-pauzes, alleen flow.</div>
+      <div class="row" style="margin-top:10px">
+        <select id="seg3Minutes">
+          <option value="10" selected>10:00</option>
+          <option value="15">15:00</option>
+        </select>
+        <button onclick="startTimer()">Start</button>
+        <button class="secondary" onclick="stopTimer()">Stop</button>
+        <span class="pill">Wake Lock: <span class="k" id="wlLabel">off</span></span>
+      </div>
+      <div class="timer" id="timerDisplay">10:00</div>
+    </details>
   </div>
 
-  <div class="row" style="margin-top:12px;">
-    <button class="btn good" onclick="newSession()">Nieuwe sessie</button>
-    <button class="btn secondary" onclick="rerollFlow()">Flow opnieuw</button>
-    <span class="pill">Max <b>1</b> overlap met gisteren</span>
-</div>
-
-  <div class="grid">
-    <!-- LEFT -->
-    <div class="card">
-<div class="row" style="justify-content:space-between;">
-        <div>
-          <div class="kicker">Skill</div>
-          <div class="big" id="skillName">—</div>
-          <div class="muted" id="skillMeta" style="margin-top:4px;">—</div>
-        </div>
-      </div>
-
-      <div class="step" style="margin-top:12px;">
-        <div class="row" style="justify-content:space-between;">
-          <div>
-            <div class="kicker">Skill timer</div>
-            <div class="big mono" id="skillClock">05:00</div>
-            <div class="muted" id="skillGuide" style="margin-top:4px;">—</div>
-          </div>
-          <div class="row">
-            <button class="btn small good" onclick="skillStartPause()" id="skillBtn">Start</button>
-            <button class="btn small secondary" onclick="skillReset()">Reset</button>
-          </div>
-        </div>
-        <div class="toast" id="wakelockStatus">Wakelock: —</div>
-      </div>
-<div class="row" style="margin-top:10px;">
-        <label class="chk">
-          <input type="checkbox" id="beepsOn" checked />
-          <span>Beeps aan (start + elke minuut + einde)</span>
-        </label>
-      </div>
-
-      <div class="hr"></div>
-
-      <div class="kicker">Vandaag — Flow (4–6)</div>
-      <ul class="list" id="flowList"></ul>
-    </div>
-
-    <!-- RIGHT -->
-    <div>
-      <details open>
-        <summary>
-          <span>Flow</span>
-          <span class="tag">3 stappen</span>
-        </summary>
-        <div class="accBody">
-          <div class="step">
-            <h3>Stap 1 — Losse skills (kennen)</h3>
-            <p>Oefeningen 1 voor 1 oefenen. Park tussen sets. Links + rechts. Doel: de flow “woorden” kennen.</p>
-          </div>
-          <div class="step">
-            <h3>Stap 2 — Single side (1–3 rondes)</h3>
-            <p>Doe de hele flow <b>links</b> (park na zijde) → <b>1:00 rust</b> → hele flow <b>rechts</b> → 1:00 rust. Herhaal tot het vloeiend gaat (max 3).</p>
-            <div class="row" style="margin-top:10px;">
-              <button class="btn small warn" onclick="restStartPause()" id="restBtn">Start 1:00 rust</button>
-              <button class="btn small secondary" onclick="restReset()">Reset</button>
-              <span class="tag mono" id="restClock">01:00</span>
-            </div>
-          </div>
-          <div class="step">
-            <h3>Stap 3 — Flowing (10 min)</h3>
-            <p>10 minuten continuous flow. Park alleen als nodig. Focus: kwaliteit, ritme, ademhaling.</p>
-            <div class="row" style="margin-top:10px;">
-              <button class="btn small good" onclick="flowStartPause()" id="flowBtn">Start 10:00</button>
-              <button class="btn small secondary" onclick="flowReset()">Reset</button>
-              <span class="tag mono" id="flowClock">10:00</span>
-            </div>
-          </div>
-          <div class="toast">Tip: hou je “puzzelen” kort. Als een overgang niet lekker voelt: kies één simpele setup (clean / hinge / park) en ga door.</div>
-        </div>
-      </details>
-    </div>
+  <div class="card muted">
+    <div class="k" style="margin-bottom:6px">v4 note</div>
+    <div>• v3 checkte vooral <span class="k">lichaam</span>. v4 checkt <span class="k">lichaam + bell</span>. Dus: geen “rotational clean → reverse get up” zonder eerst <span class="k">rack → overhead</span>.</div>
+    <div>• Body-only moves laten de bell state gelijk ("* → *"). Dat kan alleen als de positie realistisch is (bijv. half kneel met rack of OH is oké).</div>
   </div>
 </div>
 
 <script>
-/*** ---------- Data ---------- ***/
-const DB = {
-  Push: [
-    {name:"Military Press", type:"grind"},
-    {name:"Push Press", type:"grind"},
-    {name:"Floor Press", type:"grind"},
-    {name:"Half Kneeling Press", type:"grind"},
-    {name:"Push-up", type:"grind"},
-    {name:"Bent Press", type:"tech"}
-  ],
-  Pull: [
-    {name:"Bent Over Row", type:"grind"},
-    {name:"Renegade Row", type:"grind"},
-    {name:"High Pull", type:"ballistic"},
-    {name:"Snatch (to OH)", type:"ballistic"},
-    {name:"Rotational Clean", type:"ballistic"},
-    {name:"Pullover", type:"grind"}
-  ],
-  Squat: [
-    {name:"Goblet Squat", type:"grind"},
-    {name:"Front Lunge", type:"grind"},
-    {name:"Reverse Lunge", type:"grind"},
-    {name:"Cossack Squat", type:"grind"},
-    {name:"Jump Squat", type:"ballistic"},
-    {name:"Single Side Front Squat", type:"grind"}
-  ],
-  Hinge: [
-    {name:"One-arm Swing", type:"ballistic"},
-    {name:"Two-arm Swing", type:"ballistic"},
-    {name:"B-stance Deadlift", type:"grind"},
-    {name:"Sumo Deadlift", type:"grind"},
-    {name:"Single Leg Deadlift", type:"grind"},
-    {name:"Hip Thrust", type:"grind"},
-    {name:"Hand-to-Hand Swing", type:"ballistic"},
-    {name:"Figure 8", type:"ballistic"},
-    {name:"Side Swing", type:"ballistic"},
-    {name:"Tactical Lunge (Gate Pass)", type:"tech"}
-  ]
-};
-const SKILL_CATS = ["Push","Pull","Squat","Hinge"];
-const LS_KEY = "tts_flow_v3_ui_yesterday";
+/* --------------------- Persistence --------------------- */
+const LS_KEY = "KB_FLOWING_V4_DUALSTATE_STATE";
 
-/*** ---------- Utils ---------- ***/
-function rInt(n){ return Math.floor(Math.random()*n); }
-function rChoice(arr){ return arr[rInt(arr.length)]; }
-function shuffle(a){
-  for(let i=a.length-1;i>0;i--){
-    const j = rInt(i+1);
-    [a[i],a[j]] = [a[j],a[i]];
-  }
-  return a;
-}
-function overlapCount(a,b){
-  const setB = new Set(b.map(x=>x.name||x));
-  return a.filter(x=>setB.has(x.name||x)).length;
-}
-function fmtTime(s){
-  const m = Math.floor(s/60).toString().padStart(2,"0");
-  const ss = Math.floor(s%60).toString().padStart(2,"0");
-  return `${m}:${ss}`;
-}
-function beep(freq=880, dur=0.09){
-  if(!document.getElementById("beepsOn").checked) return;
+/* --------------------- Audio (beep) --------------------- */
+let audioCtx = null;
+function beep(freq=880, ms=120){
   try{
-    const ctx = new (window.AudioContext||window.webkitAudioContext)();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.frequency.value = freq;
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
     o.type = "sine";
-    g.gain.value = 0.08;
-    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value = freq;
+    g.gain.value = 0.05;
+    o.connect(g); g.connect(audioCtx.destination);
     o.start();
-    setTimeout(()=>{ o.stop(); ctx.close(); }, dur*1000);
+    setTimeout(()=>{ o.stop(); }, ms);
   }catch(e){}
 }
-function tripleBeep(){
-  beep(880,0.08);
-  setTimeout(()=>beep(880,0.08), 130);
-  setTimeout(()=>beep(880,0.08), 260);
-}
 
-/*** ---------- Wakelock ---------- ***/
+/* --------------------- Wake Lock --------------------- */
 let wakeLock = null;
-async function requestWakeLock(){
+async function enableWakeLock(){
   try{
     if("wakeLock" in navigator){
       wakeLock = await navigator.wakeLock.request("screen");
-      setWakeLockUI(true);
-      wakeLock.addEventListener("release", ()=>setWakeLockUI(false));
-    }else{
-      setWakeLockUI(null);
+      document.getElementById("wlLabel").textContent = "on";
+      wakeLock.addEventListener("release", ()=>{ document.getElementById("wlLabel").textContent = "off"; });
     }
-  }catch(e){
-    setWakeLockUI(false);
-  }
+  }catch(e){ document.getElementById("wlLabel").textContent = "off"; }
 }
-async function releaseWakeLock(){
+async function disableWakeLock(){
   try{ if(wakeLock){ await wakeLock.release(); wakeLock=null; } }catch(e){}
-  setWakeLockUI(false);
+  document.getElementById("wlLabel").textContent = "off";
 }
-function setWakeLockUI(on){
-  const el = document.getElementById("wakelockStatus");
-  if(on===null){ el.textContent = "Wakelock: niet ondersteund"; return; }
-  el.textContent = `Wakelock: ${on ? "aan" : "uit"}`;
+
+let timerInterval = null;
+let timerRunning = false;
+let endAt = 0;
+function formatMMSS(totalSeconds){
+  const min = Math.floor(totalSeconds/60);
+  const sec = totalSeconds%60;
+  return `${String(min).padStart(2,"0")}:${String(sec).padStart(2,"0")}`;
 }
+
 document.addEventListener("visibilitychange", ()=>{
-  if(document.visibilityState==="visible" && (skillRunning||restRunning||flowRunning)){
-    requestWakeLock();
-  }
+  if(document.visibilityState === "visible" && timerRunning){ enableWakeLock(); }
 });
 
-/*** ---------- Session generation ---------- ***/
-let session = null;
+/* --------------------- Dual States --------------------- */
+const BODY = {
+  SUPINE: "floor/supine",
+  SEATED: "floor/seated",
+  PLANK:  "floor/plank",
+  HALF:   "half kneel",
+  TALL:   "tall kneel",
+  HINGE:  "hinge",
+  STAND:  "stand"
+};
 
+const BELL = {
+  GROUND: "ground",      // not held / parked / handles
+  HANG:   "hang",        // held at hinge (between legs / dead hang)
+  RACK:   "rack",
+  OH:     "overhead"
+};
 
-function pickSkill(ySkillCat){
-  const disallowCats = new Set();
-  if(ySkillCat) disallowCats.add(ySkillCat);
+const INTENTS = ["Play","Travel","Rotation","Low","Mixed"];
 
-  const catPool = SKILL_CATS.filter(c=>!disallowCats.has(c));
-  const cat = rChoice(catPool.length ? catPool : SKILL_CATS); // fallback
-  const ex = rChoice(DB[cat]);
-  return {cat, ex};
+function M(name, bodyFrom, bodyTo, bellFrom, bellTo, tags={}){
+  // bellTo can be '*' meaning unchanged
+  // tags: plane, level, ballistic, tech, transfer, rotation
+  return {name, bodyFrom, bodyTo, bellFrom, bellTo, ...tags};
 }
 
-function generateFlow(yFlow){
-  let attempts = 0;
-  while(attempts < 80){
-    let flow = [];
-    flow.push(rChoice(DB.Push));
-    flow.push(rChoice(DB.Pull));
-    flow.push(rChoice(DB.Squat));
-    flow.push(rChoice(DB.Hinge));
+/* --------------------- Bases (body + bell) --------------------- */
+const BASES = [
+  {name:"Floor (Supine) • bell on ground", body:BODY.SUPINE, bell:BELL.GROUND, w:10},
+  {name:"Floor (Plank) • bell on ground", body:BODY.PLANK, bell:BELL.GROUND, w:16},
+  {name:"Floor (Seated) • bell on ground", body:BODY.SEATED, bell:BELL.GROUND, w:10},
+  {name:"Half Kneel • bell on ground", body:BODY.HALF, bell:BELL.GROUND, w:10},
+  {name:"Tall Kneel • bell on ground", body:BODY.TALL, bell:BELL.GROUND, w:8},
+  {name:"Hinge • bell in hang", body:BODY.HINGE, bell:BELL.HANG, w:18},
+  {name:"Stand • bell on ground", body:BODY.STAND, bell:BELL.GROUND, w:14},
+  {name:"Stand • bell in rack", body:BODY.STAND, bell:BELL.RACK, w:14},
+  {name:"Stand • bell overhead", body:BODY.STAND, bell:BELL.OH, w:10}
+];
 
-    const extra = rInt(3); // 0-2
-    const cats = Object.keys(DB);
-    for(let i=0;i<extra;i++){
-      const cat = rChoice(cats);
-      flow.push(rChoice(DB[cat]));
-    }
+/* --------------------- Vocabulary --------------------- */
+const CORE = [
+  // Ground / plank with bell parked (handles)
+  M("Push-Up on KBs", [BODY.PLANK], BODY.PLANK, [BELL.GROUND], BELL.GROUND, {plane:"sag", level:"ground", ballistic:false, tech:false, transfer:false, rotation:false}),
+  M("Plank Drag (KB pull-through)", [BODY.PLANK], BODY.PLANK, [BELL.GROUND], BELL.GROUND, {plane:"trans", level:"ground", ballistic:false, tech:true, transfer:false, rotation:true}),
+  // Body-only plank actions (bell can be any; bell state unchanged)
+  M("Kick Through", [BODY.PLANK], BODY.PLANK, ["*"], "*", {plane:"trans", level:"ground", ballistic:false, tech:false, transfer:false, rotation:true}),
+  M("Beast / High Plank Hold (breath)", [BODY.PLANK], BODY.PLANK, ["*"], "*", {plane:"multi", level:"ground", ballistic:false, tech:false, transfer:false, rotation:false}),
 
-    // allow duplicates across categories? prevent exact duplicate moves
-    const uniq = [];
-    const seen = new Set();
-    for(const m of flow){
-      if(seen.has(m.name)) continue;
-      seen.add(m.name);
-      uniq.push(m);
-    }
-    flow = uniq;
-    // ensure still 4-6
-    while(flow.length < 4){
-      const cat = rChoice(["Push","Pull","Squat","Hinge"]);
-      const m = rChoice(DB[cat]);
-      if(!seen.has(m.name)){ seen.add(m.name); flow.push(m); }
-    }
-    if(flow.length > 6) flow = flow.slice(0,6);
+  // Ground transitions (body-only; bell unchanged)
+  M("Jump Through to Seated", [BODY.PLANK], BODY.SEATED, ["*"], "*", {plane:"sag", level:"ground", ballistic:true, tech:true, transfer:true, rotation:false}),
+  M("Jump Through to Hinge", [BODY.PLANK], BODY.HINGE, ["*"], "*", {plane:"sag", level:"low", ballistic:true, tech:true, transfer:true, rotation:false}),
+  M("Step Up to Half Kneel", [BODY.PLANK], BODY.HALF, ["*"], "*", {plane:"sag", level:"low", ballistic:false, tech:true, transfer:true, rotation:false}),
 
-    shuffle(flow);
+  // Seated / supine (mostly with bell parked)
+  M("Russian Twist", [BODY.SEATED], BODY.SEATED, [BELL.GROUND, BELL.RACK], "*", {plane:"trans", level:"ground", ballistic:false, tech:false, transfer:false, rotation:true}),
+  M("Seated KB Switch (around the world)", [BODY.SEATED], BODY.SEATED, [BELL.GROUND, BELL.RACK], "*", {plane:"trans", level:"ground", ballistic:false, tech:false, transfer:false, rotation:true}),
+  M("Sit-Through to Plank", [BODY.SEATED], BODY.PLANK, ["*"], "*", {plane:"sag", level:"ground", ballistic:false, tech:true, transfer:true, rotation:false}),
+  M("Supine Bridge", [BODY.SUPINE], BODY.SUPINE, ["*"], "*", {plane:"sag", level:"ground", ballistic:false, tech:false, transfer:false, rotation:false}),
+  M("Supine KB Press", [BODY.SUPINE], BODY.SUPINE, [BELL.RACK], BELL.RACK, {plane:"sag", level:"ground", ballistic:false, tech:false, transfer:false, rotation:false}),
+  M("Supine Roll to Seated", [BODY.SUPINE], BODY.SEATED, ["*"], "*", {plane:"multi", level:"ground", ballistic:false, tech:true, transfer:true, rotation:true}),
 
-    if(!yFlow || overlapCount(flow, yFlow) <= 1){
-      return flow;
-    }
-    attempts++;
+  // Kneeling (bell unchanged unless specified)
+  M("Tall Kneel Hinge", [BODY.TALL], BODY.TALL, ["*"], "*", {plane:"sag", level:"low", ballistic:false, tech:false, transfer:false, rotation:false}),
+  M("Half Kneel to Tall Kneel", [BODY.HALF], BODY.TALL, ["*"], "*", {plane:"sag", level:"low", ballistic:false, tech:false, transfer:true, rotation:false}),
+  M("Tall Kneel to Half Kneel", [BODY.TALL], BODY.HALF, ["*"], "*", {plane:"sag", level:"low", ballistic:false, tech:false, transfer:true, rotation:false}),
+  M("Kneel to Stand", [BODY.HALF, BODY.TALL], BODY.STAND, ["*"], "*", {plane:"sag", level:"mid", ballistic:false, tech:true, transfer:true, rotation:false}),
+  M("Stand to Half Kneel", [BODY.STAND], BODY.HALF, ["*"], "*", {plane:"sag", level:"low", ballistic:false, tech:true, transfer:true, rotation:false}),
+
+  // Hinge / stand with bell mechanics
+  M("Pick Up to Hang", [BODY.HINGE, BODY.STAND], BODY.HINGE, [BELL.GROUND], BELL.HANG, {plane:"sag", level:"low", ballistic:false, tech:true, transfer:true, rotation:false}),
+  M("Park Bell to Ground", [BODY.HINGE], BODY.HINGE, [BELL.HANG], BELL.GROUND, {plane:"sag", level:"low", ballistic:false, tech:true, transfer:true, rotation:false}),
+
+  M("Deadlift", [BODY.HINGE, BODY.STAND], BODY.HINGE, [BELL.HANG], BELL.HANG, {plane:"sag", level:"low", ballistic:false, tech:false, transfer:false, rotation:false}),
+  M("Bent-Over Row", [BODY.HINGE], BODY.HINGE, [BELL.HANG], BELL.HANG, {plane:"sag", level:"low", ballistic:false, tech:false, transfer:false, rotation:false}),
+
+  M("Clean", [BODY.HINGE, BODY.STAND], BODY.STAND, [BELL.HANG], BELL.RACK, {plane:"sag", level:"mid", ballistic:true, tech:false, transfer:false, rotation:false}),
+  M("Front Squat", [BODY.STAND], BODY.STAND, [BELL.RACK], BELL.RACK, {plane:"sag", level:"mid", ballistic:false, tech:false, transfer:false, rotation:false}),
+  M("Halo", [BODY.STAND], BODY.STAND, [BELL.RACK], BELL.RACK, {plane:"trans", level:"mid", ballistic:false, tech:false, transfer:false, rotation:true}),
+
+  // Rack / overhead mechanics
+  M("Military Press", [BODY.STAND, BODY.HALF, BODY.TALL], "*", [BELL.RACK], BELL.OH, {plane:"sag", level:"high", ballistic:false, tech:false, transfer:false, rotation:false}),
+  M("Push Press", [BODY.STAND], BODY.STAND, [BELL.RACK], BELL.OH, {plane:"sag", level:"high", ballistic:true, tech:false, transfer:false, rotation:false}),
+  M("Overhead to Rack (controlled)", [BODY.STAND, BODY.HALF, BODY.TALL], "*", [BELL.OH], BELL.RACK, {plane:"sag", level:"mid", ballistic:false, tech:true, transfer:false, rotation:false}),
+
+  // Overhead rotations
+  M("Windmill", [BODY.STAND], BODY.STAND, [BELL.OH], BELL.OH, {plane:"front", level:"high", ballistic:false, tech:true, transfer:false, rotation:true}),
+  M("Half Kneel Windmill", [BODY.HALF], BODY.HALF, [BELL.OH], BELL.OH, {plane:"front", level:"high", ballistic:false, tech:true, transfer:false, rotation:true}),
+
+  // Ballistics
+  M("Snatch", [BODY.HINGE, BODY.STAND], BODY.STAND, [BELL.HANG], BELL.OH, {plane:"sag", level:"high", ballistic:true, tech:true, transfer:false, rotation:false}),
+
+  // Get-up system (mechanically correct)
+  M("Get Up to Stand", [BODY.SUPINE], BODY.STAND, [BELL.GROUND], BELL.OH, {plane:"multi", level:"mid", ballistic:false, tech:true, transfer:true, rotation:true}),
+  M("Reverse Get Up to Half Kneel", [BODY.STAND, BODY.HALF], BODY.HALF, [BELL.OH], BELL.OH, {plane:"multi", level:"low", ballistic:false, tech:true, transfer:true, rotation:true}),
+  M("Reverse Get Up to Supine", [BODY.STAND, BODY.HALF], BODY.SUPINE, [BELL.OH], BELL.GROUND, {plane:"multi", level:"ground", ballistic:false, tech:true, transfer:true, rotation:true})
+];
+
+const FULL_EXTRA = [
+  M("One-Arm Swing", [BODY.HINGE, BODY.STAND], BODY.HINGE, [BELL.HANG], BELL.HANG, {plane:"sag", level:"low", ballistic:true, tech:false, transfer:false, rotation:false}),
+  M("Hand-to-Hand Swing", [BODY.HINGE, BODY.STAND], BODY.HINGE, [BELL.HANG], BELL.HANG, {plane:"sag", level:"low", ballistic:true, tech:false, transfer:false, rotation:false}),
+  M("Figure 8", [BODY.HINGE, BODY.STAND], BODY.HINGE, [BELL.HANG], BELL.HANG, {plane:"trans", level:"low", ballistic:true, tech:true, transfer:false, rotation:true}),
+  M("Rotational Clean", [BODY.HINGE, BODY.STAND], BODY.STAND, [BELL.HANG], BELL.RACK, {plane:"trans", level:"mid", ballistic:true, tech:true, transfer:false, rotation:true}),
+  M("Tactical Clean", [BODY.HINGE, BODY.STAND], BODY.STAND, [BELL.HANG], BELL.RACK, {plane:"multi", level:"mid", ballistic:true, tech:true, transfer:false, rotation:true}),
+  M("Tactical Snatch", [BODY.HINGE, BODY.STAND], BODY.STAND, [BELL.HANG], BELL.OH, {plane:"multi", level:"high", ballistic:true, tech:true, transfer:false, rotation:true}),
+  M("Half Kneel Press", [BODY.HALF], BODY.HALF, [BELL.RACK], BELL.OH, {plane:"sag", level:"high", ballistic:false, tech:true, transfer:false, rotation:false}),
+  M("Tall Kneel Press", [BODY.TALL], BODY.TALL, [BELL.RACK], BELL.OH, {plane:"sag", level:"high", ballistic:false, tech:true, transfer:false, rotation:false}),
+  M("Half Kneel to Stand + Clean", [BODY.HALF], BODY.STAND, [BELL.HANG], BELL.RACK, {plane:"multi", level:"mid", ballistic:true, tech:true, transfer:true, rotation:false}),
+  M("Rack Reverse Lunge", [BODY.STAND], BODY.STAND, [BELL.RACK], BELL.RACK, {plane:"sag", level:"mid", ballistic:false, tech:true, transfer:false, rotation:false}),
+  M("Overhead Reverse Lunge", [BODY.STAND], BODY.STAND, [BELL.OH], BELL.OH, {plane:"sag", level:"high", ballistic:false, tech:true, transfer:false, rotation:false}),
+  M("Cossack Squat", [BODY.STAND], BODY.STAND, ["*"], "*", {plane:"front", level:"mid", ballistic:false, tech:true, transfer:false, rotation:true}),
+  M("Lateral Step to Hinge", [BODY.STAND], BODY.HINGE, ["*"], "*", {plane:"front", level:"low", ballistic:false, tech:false, transfer:true, rotation:false})
+];
+
+function getVocab(){
+  const mode = document.getElementById("vocabMode").value;
+  return mode === "full" ? CORE.concat(FULL_EXTRA) : CORE.slice();
+}
+
+/* --------------------- Helpers --------------------- */
+function weightedChoice(arr){
+  let total = arr.reduce((s,x)=>s+x.w,0);
+  let r = Math.random()*total;
+  for(const x of arr){ r -= x.w; if(r<=0) return x; }
+  return arr[0];
+}
+function rChoice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function randint(a,b){ return a + Math.floor(Math.random()*(b-a+1)); }
+
+function bellLabel(b){
+  if(b===BELL.GROUND) return "ground";
+  if(b===BELL.HANG) return "hang";
+  if(b===BELL.RACK) return "rack";
+  if(b===BELL.OH) return "OH";
+  return String(b);
+}
+
+function bodyLabel(s){ return s; }
+
+/* --------------------- Generator --------------------- */
+function generateFlow(){
+  const vocab = getVocab();
+
+  // intent
+  const intentSel = document.getElementById("intentMode").value;
+  const intent = intentSel === "auto" ? rChoice(INTENTS) : (
+    intentSel === "play" ? "Play" :
+    intentSel === "travel" ? "Travel" :
+    intentSel === "rotation" ? "Rotation" :
+    intentSel === "low" ? "Low" : "Mixed"
+  );
+
+  // base weights with intent bias
+  let bases = BASES.map(x=>({...x}));
+  if(intent === "Low"){
+    bases = bases.map(b=> ({...b, w: (b.body.startsWith("floor/") ? b.w+10 : Math.max(1,b.w-2)) }));
   }
-  // fallback: ignore overlap constraint
-  let flow = [rChoice(DB.Push), rChoice(DB.Pull), rChoice(DB.Squat), rChoice(DB.Hinge)];
-  shuffle(flow);
-  return flow;
+  if(intent === "Travel"){
+    bases = bases.map(b=> ({...b, w: ([BODY.PLANK,BODY.SEATED,BODY.SUPINE,BODY.HALF,BODY.TALL].includes(b.body) ? b.w+5 : b.w) }));
+  }
+  if(intent === "Rotation"){
+    bases = bases.map(b=> ({...b, w: ((b.bell===BELL.RACK||b.bell===BELL.OH||b.body===BODY.PLANK) ? b.w+4 : b.w) }));
+  }
+
+  const baseObj = weightedChoice(bases);
+  let body = baseObj.body;
+  let bell = baseObj.bell;
+
+  const used = new Set();
+  let last = null;
+
+  let tech=0, ballistic=0, transfer=0, rotation=0;
+  let consecutiveBallistic=0;
+  let lastPlane=null;
+  let lastEndBody=null;
+  let lastEndBell=null;
+
+  const targetLen = randint(7,10);
+  const flow = [];
+
+  function bellFromOk(m){
+    if(m.bellFrom.includes("*")) return true;
+    return m.bellFrom.includes(bell);
+  }
+  function bodyFromOk(m){
+    return m.bodyFrom.includes(body);
+  }
+
+  function eligible(m){
+    if(!bodyFromOk(m)) return false;
+    if(!bellFromOk(m)) return false;
+    if(used.has(m.name)) return false;
+    if(m.name === last) return false;
+
+    // soft caps
+    if(m.tech && tech>=5) return false;
+    if(m.ballistic && ballistic>=4) return false;
+    if(m.transfer && transfer>=4) return false;
+
+    // avoid ballistic streaks
+    if(m.ballistic && consecutiveBallistic>=2) return false;
+
+    // Safety: avoid going to plank with bell NOT ground unless explicitly body-only & realistic.
+    // (We allow plank with rack/OH via body-only moves, but keep it rarer)
+    if(m.bodyTo === BODY.PLANK){
+      const nextBell = (m.bellTo === "*") ? bell : m.bellTo;
+      if(nextBell !== BELL.GROUND){
+        // only allow if it's explicitly a body-only move and tech
+        if(!(m.bellFrom.includes("*") && m.bellTo === "*" && m.tech)) return false;
+      }
+    }
+
+    // Intent guardrails
+    if(intent !== "Low"){
+      if(!body.startsWith("floor/") && m.bodyTo.startsWith("floor/")){
+        const ok = m.name.includes("Get Up") || m.name.includes("Sit-Through") || m.name.includes("Jump Through") || m.name.includes("Roll");
+        if(!ok) return false;
+      }
+    }
+
+    return true;
+  }
+
+  function score(m){
+    let s = 1;
+
+    // intent nudges
+    if(intent === "Rotation" && (m.rotation || m.plane === "trans")) s += 3;
+    if(intent === "Travel" && m.transfer) s += 3;
+    if(intent === "Low" && (m.level === "ground" || m.bodyTo.startsWith("floor/"))) s += 3;
+
+    // prefer variety: change plane
+    if(lastPlane && m.plane === lastPlane) s -= 1;
+    if(lastPlane && m.plane !== lastPlane) s += 1;
+
+    // prefer variety in end states (body + bell)
+    const nextEndBody = (m.bodyTo === "*") ? body : m.bodyTo;
+    const nextEndBell = (m.bellTo === "*") ? bell : m.bellTo;
+
+    if(lastEndBody && nextEndBody === lastEndBody) s -= 1;
+    if(lastEndBody && nextEndBody !== lastEndBody) s += 1;
+    if(lastEndBell && nextEndBell === lastEndBell) s -= 1;
+    if(lastEndBell && nextEndBell !== lastEndBell) s += 1;
+
+    // small preference: if bell is on ground, encourage pick up soon unless Low/ground intent
+    if(bell === BELL.GROUND && m.name === "Pick Up to Hang") s += 2;
+
+    // small preference: avoid "park" too early
+    if(flow.length < 4 && m.name === "Park Bell to Ground") s -= 2;
+
+    return Math.max(1, s);
+  }
+
+  function pickMove(){
+    const pool = vocab.filter(eligible);
+    if(!pool.length) return null;
+
+    const scored = pool.map(m=>({m, w: score(m)}));
+    let total = scored.reduce((a,x)=>a+x.w,0);
+    let r = Math.random()*total;
+    for(const x of scored){ r -= x.w; if(r<=0) return x.m; }
+    return scored[0].m;
+  }
+
+  let guard=0;
+  while(flow.length < targetLen && guard < 160){
+    guard++;
+    const m = pickMove();
+    if(!m) break;
+
+    // push
+    flow.push(m);
+    used.add(m.name);
+    last = m.name;
+
+    // update stats
+    if(m.tech) tech++;
+    if(m.ballistic) ballistic++;
+    if(m.transfer) transfer++;
+    if(m.rotation) rotation++;
+
+    // ballistic streak
+    if(m.ballistic) consecutiveBallistic++; else consecutiveBallistic=0;
+    lastPlane = m.plane || null;
+
+    // update states
+    body = (m.bodyTo === "*") ? body : m.bodyTo;
+    bell = (m.bellTo === "*") ? bell : m.bellTo;
+    lastEndBody = body;
+    lastEndBell = bell;
+
+    // stop early if it already feels like a complete sentence
+    if(flow.length>=7 && transfer>=2 && rotation>=1){
+      if(Math.random() < 0.35) break;
+    }
+  }
+
+  // coherence check
+  const coherent = checkCoherence(baseObj, flow);
+  document.getElementById("cohTag").textContent = coherent.ok ? "coherent" : "warning";
+  document.getElementById("cohTag").className = "tag " + (coherent.ok ? "good" : "warn");
+
+  // store
+  const payload = {vocabMode:document.getElementById("vocabMode").value, intentMode:document.getElementById("intentMode").value, base:baseObj, intent, flow};
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(payload)); }catch(e){}
+
+  renderAll(baseObj, intent, flow, coherent);
 }
 
-function newSession(keepTimers=false){
-  const y = JSON.parse(localStorage.getItem(LS_KEY) || "null");
-  const yFlow = y?.flow || null;
-  const ySkillCat = y?.skillCat || null;
+function checkCoherence(baseObj, flow){
+  let b = baseObj.body;
+  let k = baseObj.bell;
+  const problems=[];
 
-  const skill = pickSkill(ySkillCat);
-  const flow = generateFlow(yFlow);
+  for(let i=0;i<flow.length;i++){
+    const m = flow[i];
+    const bodyOk = m.bodyFrom.includes(b);
+    const bellOk = m.bellFrom.includes("*") || m.bellFrom.includes(k);
+    if(!bodyOk || !bellOk){
+      problems.push({i, name:m.name, expectedBody:b, expectedBell:k});
+      // try to continue with "best guess" to avoid cascading
+    }
+    b = (m.bodyTo === "*") ? b : m.bodyTo;
+    k = (m.bellTo === "*") ? k : m.bellTo;
+  }
 
-  session = {
-    skillCat: skill.cat,
-    skill: skill.ex,
-    flow
+  return {ok: problems.length===0, problems};
+}
+
+function renderAll(baseObj, intent, flow, coherent){
+  document.getElementById("baseLabel").textContent = baseObj.name;
+  document.getElementById("intentLabel").textContent = intent;
+
+  // list
+  const list = document.getElementById("flowList");
+  list.innerHTML = "";
+
+  const stats = {
+    moves: flow.length,
+    ballistic: flow.filter(x=>x.ballistic).length,
+    tech: flow.filter(x=>x.tech).length,
+    travel: flow.filter(x=>x.transfer).length,
+    rotation: flow.filter(x=>x.rotation).length
   };
 
-  localStorage.setItem(LS_KEY, JSON.stringify({
-    skillCat: session.skillCat,
-    skillName: session.skill.name,
-    flow: session.flow.map(m=>({name:m.name,type:m.type}))
-  }));
+  document.getElementById("statsLine").textContent = `Moves: ${stats.moves} • ballistic: ${stats.ballistic} • tech: ${stats.tech} • travel: ${stats.travel} • rotation: ${stats.rotation}`;
 
-  render();
+  // show each step with both state tracks
+  // reconstruct the chain so we can print the actual transitions
+  let b = baseObj.body;
+  let k = baseObj.bell;
 
-  if(!keepTimers){
-    skillReset();
-    restReset();
-    flowReset();
-  }
-}
+  flow.forEach((m,i)=>{
+    const bTo = (m.bodyTo === "*") ? b : m.bodyTo;
+    const kTo = (m.bellTo === "*") ? k : m.bellTo;
 
-function rerollFlow(){
-  const y = JSON.parse(localStorage.getItem(LS_KEY) || "null");
-  const yFlow = y?.flow || null;
-  if(!session) newSession(true);
-  session.flow = generateFlow(yFlow);
-  localStorage.setItem(LS_KEY, JSON.stringify({
-    skillCat: session.skillCat,
-    skillName: session.skill.name,
-    flow: session.flow.map(m=>({name:m.name,type:m.type}))
-  }));
-  renderFlow();
-}
+    const tags=[];
+    if(m.tech) tags.push('<span class="tag warn">tech</span>');
+    if(m.ballistic) tags.push('<span class="tag">ballistic</span>');
+    if(m.transfer) tags.push('<span class="tag">travel</span>');
+    if(m.rotation) tags.push('<span class="tag">rot</span>');
 
-function render(){  document.getElementById("skillName").textContent = session.skill.name;
-  document.getElementById("skillMeta").textContent = `Categorie: ${session.skillCat} • Type: ${session.skill.type}`;
+    list.innerHTML += `
+      <div class="flowStep">
+        <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
+          <div>
+            <div class="k">${i+1}. ${m.name}</div>
+            <div class="tiny mono">body: ${bodyLabel(b)} → <span class="k">${bodyLabel(bTo)}</span> &nbsp;|&nbsp; bell: ${bellLabel(k)} → <span class="k">${bellLabel(kTo)}</span> &nbsp;• plane: ${m.plane||"—"}</div>
+          </div>
+          <div class="meta">${tags.join('')}</div>
+        </div>
+      </div>
+    `;
 
-  const guide = (session.skill.type === "ballistic")
-    ? "5:00 timer • 5–10 reps per minuut (EMOM) • links/rechts afwisselen"
-    : "5:00 timer • 3–5 reps per minuut (EMOM) • links/rechts afwisselen";
-  document.getElementById("skillGuide").textContent = guide;
-
-  renderFlow();
-}
-
-function renderFlow(){
-  const ul = document.getElementById("flowList");
-  ul.innerHTML = "";
-  session.flow.forEach((m, idx)=>{
-    const li = document.createElement("li");
-    li.innerHTML = `<span><b>${idx+1}.</b> ${m.name}</span><span class="tag">${m.type}</span>`;
-    ul.appendChild(li);
+    b = bTo; k = kTo;
   });
-}
 
-/*** ---------- Timers ---------- ***/
-let skillT = 300, skillInt = null, skillRunning = false, skillLastMin = 5;
-let restT  = 60,  restInt  = null, restRunning  = false, restLast = 1;
-let flowT  = 600, flowInt  = null, flowRunning  = false, flowLast = 10;
+  // Segment 1 reps
+  const seg1 = document.getElementById("seg1");
+  seg1.innerHTML = "";
+  flow.forEach((m,i)=>{
+    const reps = m.ballistic ? randint(2,4) : randint(3,5);
+    seg1.innerHTML += `<div class="flowStep">${i+1}. ${m.name} — <span class="k">${reps}</span> reps</div>`;
+  });
 
-function skillStartPause(){
-  if(skillRunning){
-    clearInterval(skillInt); skillInt=null; skillRunning=false;
-    document.getElementById("skillBtn").textContent="Start";
-    return;
+  // Segment 2 instructions
+  const seg2 = document.getElementById("seg2");
+  const rounds = parseInt(document.getElementById("seg2Rounds").value,10);
+  seg2.innerHTML = `<div class="flowStep">Doe de volledige flow <span class="k">${rounds}</span>x. Daarna: rust en evalueer (tempo, handwissel, adem, bel-pad).</div>`;
+
+  // Seg2 timer display sync
+  const rest = parseInt(document.getElementById("seg2Rest").value,10);
+  document.getElementById("seg2Timer").textContent = formatMMSS(rest);
+
+  // Seg3 display sync
+  const mins = document.getElementById("seg3Minutes").value;
+  document.getElementById("timerDisplay").textContent = `${String(mins).padStart(2,"0")}:00`;
+
+  // Coherence problems
+  if(!coherent.ok){
+    list.innerHTML = `<div class="flowStep"><span class="tag bad">mismatch</span> <span class="muted">Er zit een state-mismatch in deze flow. Druk “Nieuwe flow”.</span></div>` + list.innerHTML;
   }
-  // Start
-  beep(660,0.10);
-  requestWakeLock();
-  skillRunning=true;
-  document.getElementById("skillBtn").textContent="Pauze";
-  skillInt = setInterval(()=>{
-    skillT = Math.max(0, skillT-1);
-    const mm = Math.ceil(skillT/60);
-    if(mm < skillLastMin){
-      // minute tick
-      beep(880,0.08);
-      skillLastMin = mm;
-    }
-    document.getElementById("skillClock").textContent = fmtTime(skillT);
-    if(skillT<=0){
-      clearInterval(skillInt); skillInt=null; skillRunning=false;
-      document.getElementById("skillBtn").textContent="Start";
-      tripleBeep();
-      // do not release wake lock if other timers running
-      if(!restRunning && !flowRunning) releaseWakeLock();
-    }
-  }, 1000);
 }
 
-function skillReset(){
-  clearInterval(skillInt); skillInt=null; skillRunning=false;
-  skillT = 300; skillLastMin = 5;
-  document.getElementById("skillClock").textContent = "05:00";
-  document.getElementById("skillBtn").textContent="Start";
-  if(!restRunning && !flowRunning) releaseWakeLock();
-}
+/* --------------------- Segment 2 Rest Timer --------------------- */
+let seg2Interval=null;
+let seg2Running=false;
+let seg2EndAt=0;
 
-function restStartPause(){
-  if(restRunning){
-    clearInterval(restInt); restInt=null; restRunning=false;
-    document.getElementById("restBtn").textContent="Start 1:00 rust";
-    return;
-  }
-  beep(520,0.10);
-  requestWakeLock();
-  restRunning=true;
-  document.getElementById("restBtn").textContent="Pauze rust";
-  restInt = setInterval(()=>{
-    restT = Math.max(0, restT-1);
-    document.getElementById("restClock").textContent = fmtTime(restT);
-    if(restT<=0){
-      clearInterval(restInt); restInt=null; restRunning=false;
-      document.getElementById("restBtn").textContent="Start 1:00 rust";
-      tripleBeep();
-      restT = 60;
-      document.getElementById("restClock").textContent = "01:00";
-      if(!skillRunning && !flowRunning) releaseWakeLock();
+function startSeg2Rest(){
+  const rest = parseInt(document.getElementById("seg2Rest").value,10);
+  seg2EndAt = Date.now() + rest*1000;
+  seg2Running = true;
+  beep(880,120);
+
+  clearInterval(seg2Interval);
+  seg2Interval = setInterval(()=>{
+    const remaining = Math.max(0, Math.ceil((seg2EndAt - Date.now())/1000));
+    document.getElementById("seg2Timer").textContent = formatMMSS(remaining);
+    if(remaining === 0){
+      clearInterval(seg2Interval);
+      seg2Running = false;
+      beep(660,160); setTimeout(()=>beep(990,220), 180);
     }
-  }, 1000);
-}
-function restReset(){
-  clearInterval(restInt); restInt=null; restRunning=false;
-  restT = 60;
-  document.getElementById("restClock").textContent = "01:00";
-  document.getElementById("restBtn").textContent="Start 1:00 rust";
-  if(!skillRunning && !flowRunning) releaseWakeLock();
+  }, 250);
 }
 
-function flowStartPause(){
-  if(flowRunning){
-    clearInterval(flowInt); flowInt=null; flowRunning=false;
-    document.getElementById("flowBtn").textContent="Start 10:00";
-    return;
-  }
-  beep(660,0.10);
-  requestWakeLock();
-  flowRunning=true;
-  document.getElementById("flowBtn").textContent="Pauze";
-  flowInt = setInterval(()=>{
-    flowT = Math.max(0, flowT-1);
-    document.getElementById("flowClock").textContent = fmtTime(flowT);
-    if(flowT<=0){
-      clearInterval(flowInt); flowInt=null; flowRunning=false;
-      document.getElementById("flowBtn").textContent="Start 10:00";
-      tripleBeep();
-      if(!skillRunning && !restRunning) releaseWakeLock();
+function stopSeg2Rest(){
+  clearInterval(seg2Interval);
+  seg2Running = false;
+  const rest = parseInt(document.getElementById("seg2Rest").value,10);
+  document.getElementById("seg2Timer").textContent = formatMMSS(rest);
+}
+
+/* --------------------- Segment 3 Timer --------------------- */
+async function startTimer(){
+  const mins = parseInt(document.getElementById("seg3Minutes").value,10);
+  const total = mins * 60;
+  endAt = Date.now() + total*1000;
+  timerRunning = true;
+
+  beep(880,120);
+  await enableWakeLock();
+
+  clearInterval(timerInterval);
+  timerInterval = setInterval(()=>{
+    const remaining = Math.max(0, Math.ceil((endAt - Date.now())/1000));
+    document.getElementById("timerDisplay").textContent = formatMMSS(remaining);
+    if(remaining === 0){
+      clearInterval(timerInterval);
+      timerRunning = false;
+      disableWakeLock();
+      beep(660,160); setTimeout(()=>beep(990,220), 180);
     }
-  }, 1000);
-}
-function flowReset(){
-  clearInterval(flowInt); flowInt=null; flowRunning=false;
-  flowT = 600;
-  document.getElementById("flowClock").textContent = "10:00";
-  document.getElementById("flowBtn").textContent="Start 10:00";
-  if(!skillRunning && !restRunning) releaseWakeLock();
+  }, 250);
 }
 
-/*** ---------- Boot ---------- ***/
+function stopTimer(){
+  clearInterval(timerInterval);
+  timerRunning = false;
+  disableWakeLock();
+  const mins = document.getElementById("seg3Minutes").value;
+  document.getElementById("timerDisplay").textContent = `${String(mins).padStart(2,"0")}:00`;
+}
+
+/* --------------------- Boot restore --------------------- */
 (function boot(){
-  const y = JSON.parse(localStorage.getItem(LS_KEY) || "null");
-  if(y && y.flow && y.skillCat){
-    // restore last session immediately
-    const skillEx = {name:y.skillName || "—", type:"—"};
-    session = {
-      skillCat: y.skillCat,
-      skill: skillEx,
-      flow: y.flow.map(m=>({name:m.name, type:m.type || "grind"}))
-    };
-    // If user wants, they can click "Nieuwe sessie" for a fresh one.
-    render();
-  }else{
-    newSession(true);
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw){ generateFlow(); return; }
+    const saved = JSON.parse(raw);
+    if(saved?.vocabMode) document.getElementById("vocabMode").value = saved.vocabMode;
+    if(saved?.intentMode) document.getElementById("intentMode").value = saved.intentMode;
+    if(saved?.flow?.length && saved?.base){
+      const coherent = checkCoherence(saved.base, saved.flow);
+      document.getElementById("cohTag").textContent = coherent.ok ? "coherent" : "warning";
+      document.getElementById("cohTag").className = "tag " + (coherent.ok ? "good" : "warn");
+      renderAll(saved.base, saved.intent || rChoice(INTENTS), saved.flow, coherent);
+    }else{
+      generateFlow();
+    }
+  }catch(e){
+    generateFlow();
   }
 })();
 </script>
